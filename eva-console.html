@@ -62,9 +62,18 @@
   </div>
 </main>
 <script>
-const SUPABASE_URL = 'https://jiximtizoodrpvfjdxaq.supabase.co';
-const ANON_KEY = 'sb_publishable_0IYsHAvGYry8FHVS7s2hUg_qI9lvkXm';
-const sb = supabase.createClient(SUPABASE_URL, ANON_KEY.trim());
+// No credentials in the repo: entered once, kept in this browser's localStorage.
+let SUPABASE_URL = localStorage.getItem('eva_url') || '';
+let ANON_KEY = localStorage.getItem('eva_key') || '';
+if (!SUPABASE_URL) {
+  SUPABASE_URL = (prompt('Supabase project URL (https://<ref>.supabase.co):') || '').trim();
+  if (SUPABASE_URL) localStorage.setItem('eva_url', SUPABASE_URL);
+}
+if (!ANON_KEY) {
+  ANON_KEY = (prompt('Supabase publishable key (sb_publishable_...):') || '').trim();
+  if (ANON_KEY) localStorage.setItem('eva_key', ANON_KEY);
+}
+const sb = supabase.createClient(SUPABASE_URL, ANON_KEY);
 let threads = {}, activeThread = null, decisionsCache = {};
 
 function esc(s){const d=document.createElement('div');d.textContent=s||'';return d.innerHTML;}

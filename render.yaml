@@ -9,7 +9,7 @@ services:
       - key: ANTHROPIC_API_KEY
         sync: false
       - key: SUPABASE_URL
-        value: https://jiximtizoodrpvfjdxaq.supabase.co
+        sync: false
       - key: SUPABASE_SERVICE_KEY
         sync: false
       - key: MAILBOX

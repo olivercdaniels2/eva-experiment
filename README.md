@@ -23,20 +23,44 @@ with production systems.
   confidence forces loop-in. Server-side refusal fallbacks are enabled
   (`fallbacks: "default"`) so a safety decline degrades gracefully.
 
+## The credit policy is NOT in this repo
+
+`credit-policy.pdf` lives in a private Supabase Storage bucket (`eva-policy`) and is
+fetched at runtime by `decide._load_policy_pdf()` using the service key. This repo is
+public, so never commit it back (`*.pdf` is git-ignored). Set `POLICY_PDF_PATH` to use a
+local copy during development.
+
 ## Setup (once)
 
-1. **Database**: run `migration.sql` in the Experiment project's SQL editor
-   (or via the Supabase MCP once authenticated).
-2. **Keys**: fill `SUPABASE_SERVICE_KEY` in `.env` (Project Settings → API keys →
-   service_role). The console asks once for the anon key and stores it in localStorage.
-3. **Run locally**:
+1. **Database**: run `migration.sql` against the project. Either paste it into the SQL
+   editor, or via the Management API with a `sbp_` personal access token:
    ```bash
-   cd paul-agent
-   python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
+   python3 -c "import json;print(json.dumps({'query':open('migration.sql').read()}))" > /tmp/mig.json
+   curl -X POST "https://api.supabase.com/v1/projects/<ref>/database/query" \
+     -H "Authorization: Bearer $SUPABASE_PAT" -H "Content-Type: application/json" \
+     -A "Mozilla/5.0" --data-binary @/tmp/mig.json
+   ```
+   (the `-A` matters — Cloudflare 403s the default urllib/curl agent.)
+2. **Policy bucket** (once): create bucket `eva-policy`, upload the PDF:
+   ```bash
+   curl -X POST "$SUPABASE_URL/storage/v1/bucket" -H "apikey: $KEY" \
+     -H "Authorization: Bearer $KEY" -H "Content-Type: application/json" \
+     -d '{"id":"eva-policy","name":"eva-policy","public":false}'
+   curl -X POST "$SUPABASE_URL/storage/v1/object/eva-policy/credit-policy.pdf" \
+     -H "apikey: $KEY" -H "Authorization: Bearer $KEY" \
+     -H "Content-Type: application/pdf" --data-binary @credit-policy.pdf
+   ```
+3. **Keys**: put `ANTHROPIC_API_KEY`, `SUPABASE_URL` and `SUPABASE_SERVICE_KEY` in `.env`
+   (git-ignored). The console prompts once for the URL + publishable key and keeps them
+   in localStorage — no credentials in this repo.
+4. **Run locally**:
+   ```bash
+   python3.12 -m venv .venv && .venv/bin/pip install -r requirements.txt
    .venv/bin/python -m scripts.run_sample samples/sunny.txt   # brain only, no DB
+   .venv/bin/python -m scripts.seed samples/sunny.txt         # drop into mimic inbox
    .venv/bin/python -m src.main                               # full worker loop
    ```
-4. **Console**: open `eva-console.html` in a browser (any static server or file://).
+5. **Console**: open `eva-console.html` in a browser (any static server or file://).
 
 ## Deploy to Render
 
