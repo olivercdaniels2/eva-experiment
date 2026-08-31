@@ -1,0 +1,54 @@
+{
+  "persona": {
+    "name": "Eva Fitzgerald",
+    "email": "eva@alba.loans",
+    "title": "AI Enquiry Consultant",
+    "company": "Albatross Lending",
+    "signature": "Eva Fitzgerald | AI Enquiry Consultant\n\nT: 0208 077 7690 - Option 3\n\nW: www.albatrosslending.co.uk\n\n36 Soho Square, London W1D 3QY",
+    "disclaimer": "Any criteria mentioned above are our standard published criteria, not an indication of terms. All lending is subject to full underwriting and credit approval."
+  },
+  "routing": {
+    "bdms": {
+      "david": {
+        "name": "David",
+        "email": "david@alba.loans",
+        "owns": "SME product enquiries (Albatross SME lending)",
+        "leads_on": "our SME lending"
+      },
+      "nils": {
+        "name": "Nils",
+        "email": "nils@alba.loans",
+        "owns": "everything else: bridging (purchase/refinance), refurbishment, development exit, commercial and semi-commercial",
+        "leads_on": "our bridging, commercial and development lending"
+      }
+    },
+    "fallback_bdm": "nils",
+    "min_routing_confidence": 0.7
+  },
+  "thresholds": {
+    "_comment": "EDIT ME - verify every value against credit-policy.pdf before going live. These drive canned sentences only; Paul cannot invent numbers.",
+    "max_ltv_residential_pct": 75,
+    "max_ltv_commercial_pct": 70,
+    "max_ltgdv_pct": 70,
+    "min_loan_gbp": 100000,
+    "max_loan_gbp": 5000000,
+    "min_term_months": 3,
+    "max_term_months": 24
+  },
+  "policy_facts": {
+    "max_ltv_residential": "our standard maximum LTV on residential security is 75% of open market value",
+    "max_ltv_commercial": "our standard maximum LTV on commercial and semi-commercial security is 70% of open market value",
+    "max_ltgdv": "on development exit and heavy refurbishment, our standard maximum is 70% of GDV",
+    "loan_range": "we typically lend between £100,000 and £5,000,000",
+    "term_range": "our terms typically run from 3 to 24 months",
+    "security_location": "we lend against property in England and Wales",
+    "entity_types": "we lend to individuals, LLPs and UK limited companies including SPVs",
+    "valuation_required": "all lending is subject to an independent valuation instructed by us",
+    "first_charge_only": "we lend on a first charge basis"
+  },
+  "hard_rules": [
+    "Never state or imply a rate, an LTV we would do, a loan amount we would offer, or any deal-specific terms.",
+    "Never decline a deal or say we have no appetite.",
+    "Only reference criteria via policy fact IDs - the sentences are inserted verbatim by code."
+  ]
+}
