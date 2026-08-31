@@ -52,7 +52,8 @@
 <body>
 <header>
   <h1>Eva Console</h1><span class="badge">EXPERIMENT · MIMIC MAIL</span>
-  <span class="right" id="connState">connecting…</span>
+  <span class="right"><a href="#" id="svcLink" style="color:#67c9ba;text-decoration:none" title="Set the deployed service URL">service</a>
+  · <span id="connState">connecting…</span></span>
 </header>
 <main>
   <div id="threads"><button id="newBtn">+ New enquiry</button><div id="threadList"></div></div>
@@ -190,6 +191,30 @@ window.sendMsg = async function(isNew){
   if (error) return alert(error.message);
   activeThread = data[0].thread_id;
   await loadThreads(); renderComposer('reply');
+  wakeEva();
+};
+
+// Render's free tier sleeps after ~15min idle; this ping boots it (cold start
+// ~30-60s) and makes it drain the inbox. No-op when running the worker locally.
+async function wakeEva(){
+  const base = (localStorage.getItem('eva_service_url')||'').replace(/\/+$/,'');
+  const el = document.getElementById('connState');
+  if (!base) return;
+  el.textContent = 'waking Eva…';
+  try {
+    const r = await fetch(base + '/wake', {method:'POST'});
+    const j = await r.json();
+    el.textContent = j.skipped ? 'Eva busy (already running)'
+      : `Eva awake · processed ${j.processed ?? 0}`;
+  } catch(e){ el.textContent = 'Eva unreachable (still booting?)'; }
+  loadThreads();
+}
+
+document.getElementById('svcLink').onclick = (e)=>{
+  e.preventDefault();
+  const cur = localStorage.getItem('eva_service_url')||'';
+  const v = prompt('Deployed Eva service URL (blank = running the worker locally):', cur);
+  if (v!==null) localStorage.setItem('eva_service_url', v.trim());
 };
 
 // realtime + polling fallback

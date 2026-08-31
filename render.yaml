@@ -1,9 +1,13 @@
 services:
-  - type: worker
+  # Free tier has no background workers, so Eva runs as a web service whose
+  # /wake endpoint doubles as the wake-from-sleep signal. See src/server.py.
+  - type: web
     name: eva-enquiry-agent
     runtime: python
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: python -m src.main
+    startCommand: python -m src.server
+    healthCheckPath: /
     autoDeploy: true
     envVars:
       - key: ANTHROPIC_API_KEY
@@ -16,3 +20,5 @@ services:
         value: mimic
       - key: POLL_SECONDS
         value: "10"
+      - key: PYTHON_VERSION
+        value: "3.12.13"
