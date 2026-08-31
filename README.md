@@ -10,7 +10,7 @@ with production systems.
 ## Architecture
 
 - **Mimic mailbox**: `mimic_messages` table in the *Experiment* Supabase project
-  (`jiximtizoodrpvfjdxaq`) plays the inbox. `eva-console.html` is the fake mail client —
+  plays the inbox. `eva-console.html` is the fake mail client —
   compose enquiries as a broker, watch Eva reply in-thread, click "Why did Eva do this?"
   for the extraction ledger and audit trail.
 - **Worker** (`src/main.py`): polls for unread inbound mail, runs `decide.assess()`

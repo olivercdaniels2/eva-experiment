@@ -1,7 +1,7 @@
 -- ============================================================
 -- Eva (Experiment) – Supabase Migration
 -- Run this ENTIRE script in the NEW Experiment project SQL Editor:
--- https://supabase.com/dashboard/project/jiximtizoodrpvfjdxaq/sql/new
+-- https://supabase.com/dashboard/project/PROJECT_REF/sql/new
 -- ============================================================
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
