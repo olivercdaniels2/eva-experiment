@@ -8,6 +8,7 @@ criteria sentences (limits.json owns those, inserted verbatim by fact ID).
 import base64
 import json
 import os
+import urllib.request
 from pathlib import Path
 
 import anthropic
@@ -93,13 +94,28 @@ ASSESSMENT_SCHEMA = {
 }
 
 
+def _load_policy_pdf() -> bytes:
+    """Credit policy lives in a private Supabase bucket, never in the repo."""
+    local = os.environ.get("POLICY_PDF_PATH")
+    if local and Path(local).exists():
+        return Path(local).read_bytes()
+
+    key = os.environ["SUPABASE_SERVICE_KEY"]
+    url = (f"{os.environ['SUPABASE_URL'].rstrip('/')}/storage/v1/object/"
+           f"{os.environ.get('POLICY_BUCKET', 'eva-policy')}/"
+           f"{os.environ.get('POLICY_OBJECT', 'credit-policy.pdf')}")
+    req = urllib.request.Request(
+        url, headers={"apikey": key, "Authorization": f"Bearer {key}"})
+    with urllib.request.urlopen(req) as resp:
+        return resp.read()
+
+
 def _init():
     global _client, _policy_pdf_b64, _system_blocks
     if _client is not None:
         return
     _client = anthropic.Anthropic()
-    pdf_path = Path(os.environ.get("POLICY_PDF_PATH", BASE_DIR / "credit-policy.pdf"))
-    _policy_pdf_b64 = base64.standard_b64encode(pdf_path.read_bytes()).decode()
+    _policy_pdf_b64 = base64.standard_b64encode(_load_policy_pdf()).decode()
 
     limits = _load_limits()
     system_text = (BASE_DIR / "prompts" / "system.txt").read_text()

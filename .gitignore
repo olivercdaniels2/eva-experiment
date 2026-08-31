@@ -2,3 +2,5 @@
 __pycache__/
 *.pyc
 .venv/
+credit-policy.pdf
+*.pdf
